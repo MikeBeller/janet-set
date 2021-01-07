@@ -13,7 +13,9 @@ Note the one unfortunate thing about using a struct or table
 as a set `s` is that `(values s)` does the wrong thing.  It
 gives you the values (which are just boolean 'true') instead
 of the keys, which are the real values of a set.  So you have
-to use `(set/values s)` instead.
+to use `(set/values s)` to get the values.  When iterating you
+can use (loop [k :keys someset] ...) -- fixing this would require
+creating a new abstract type. :-(
 
 # Example Usage
 
@@ -26,6 +28,10 @@ values.
 (def s (set/new :a :b :c))  # -> @{:a true :b true :c true}
 (def fs (set/frozen :b :d)) # -> {:b true :d true}
 
+# check membership
+(set/in? (set/new :a :b :c) :a) # -> true
+(set/in? (set/frozen :a :b) :c) # -> false
+
 # Add or remove items
 (set/add (set/new :a :b) :c)  # -> @{:a true :b true :c true}  # modifies original
 (set/remove (set/new :a :b) :b)  # -> @{:a true}     # modifies original
@@ -33,7 +39,7 @@ values.
 (set/remove (frozenset/new :a :b) :b) # -> {:a true} # returns new frozenset
 
 # do operations -- note that first argument determines
-# whether result will be (mutable) set or frozenset.
+# whether result will be a new (mutable) set or a new frozenset.
 (set/union s fs)            # -> @{:a true :b true :c true :d true}
 (set/union fs s)            # -> {:a true :b true :c true :d true}
 (set/intersect s fs)        # -> @{:b true}

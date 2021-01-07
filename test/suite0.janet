@@ -8,6 +8,12 @@
 (ae (set/new :a :b :c) @{:a true :b true :c true})
 (ae (set/frozen :b :d) {:b true :d true})
 
+# test membership
+(assert (= true (set/in? (set/new :a :b) :a)))
+(assert (= false (set/in? (set/new :a :b) :c)))
+(assert (= true (set/in? (set/frozen 1 "foo") "foo")))
+(assert (= false (set/in? (set/frozen :a :b) :c)))
+
 # add and remove -- also check type of result
 # adding to a set modifies it
 (def s (set/new :a :b))

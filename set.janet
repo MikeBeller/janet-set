@@ -40,6 +40,12 @@
         (put nw it nil)
         (table/to-struct nw)))))
 
+# test membership
+(defn in?
+  """Check if item `it` is a member of set `s`.  Returns boolean."""
+  [s it]
+  (truthy? (get s it)))
+
 # extract values
 (defn values
   """Return the values of a set or frozenset
@@ -69,14 +75,14 @@
 
 (defn union
   """Union of any number of sets / frozensets.
-     Return type is that of the first argument."""
+     Return type is a new set/frozenset depending on type of the first argument."""
   [fst & others]
   ((typefcn fst)
    ;(kvs (merge fst ;others))))
 
 (defn intersect
   """Intersection of any number of sets / frozensets.
-     Return type is that of the first argument."""
+     Return type is a new set/frozenset depending on type of the first argument."""
   [fst & others]
   (def tb (table))
   (def ss (sort-by length (array/concat @[fst] others)))
@@ -90,7 +96,7 @@
 
 (defn diff
   """Difference of any number of sets / frozensets.
-     Return type is that of the first argument."""
+     Return type is a new set/frozenset depending on type of the first argument."""
   [fst & others]
   (def tb (table ;(kvs fst)))
   (loop [s :in others]
