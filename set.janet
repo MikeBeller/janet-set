@@ -9,19 +9,19 @@
 
 # create
 (defn new
-  """Create a new mutable set from items"""
+  ```Create a new mutable set from items```
   [& items]
   (table ;(mapcat |[$ true] items)))
 
 (defn frozen
-  """Create a new frozen set from items"""
+  ```Create a new frozen set from items```
   [& items]
   (struct ;(mapcat |[$ true] items)))
 
 # add/remove
 (defn add
-  """Add a value to a set.  Modifies original unless
-     the set is a frozenset, in which case creates a new frozenset."""
+  ```Add a value to a set.  Modifies original unless
+     the set is a frozenset, in which case creates a new frozenset.```
   [st it]
   (if (table? st)
     (do (put st it true)
@@ -29,8 +29,8 @@
     (struct ;(kvs st) it true)))
 
 (defn remove
-  """Remove a value from a set.  Modifies the original unless
-     it is a frozenset, in which case returns a new set."""
+  ```Remove a value from a set.  Modifies the original unless
+     it is a frozenset, in which case returns a new set.```
   [st it]
   (if (table? st)
     (do (put st it nil)
@@ -42,14 +42,14 @@
 
 # test membership
 (defn in?
-  """Check if item `it` is a member of set `s`.  Returns boolean."""
+  ```Check if item `it` is a member of set `s`.  Returns boolean.```
   [s it]
   (truthy? (get s it)))
 
 # extract values
 (defn values
-  """Return the values of a set or frozenset
-     If frozenset, result is a tuple, else it is an array"""
+  ```Return the values of a set or frozenset
+     If frozenset, result is a tuple, else it is an array```
   [s]
   (if (struct? s)
     (tuple ;(keys s))
@@ -57,13 +57,13 @@
 
 # check types
 (defn set?
-  """Check if argument is a set"""
+  ```Check if argument is a set```
   [s]
   (and (table? s)
        (all true? (base-values s))))
 
 (defn frozenset?
-  """Check if argument is a frozenset"""
+  ```Check if argument is a frozenset```
   [s]
   (and (struct? s)
        (all true? (base-values s))))
@@ -74,15 +74,15 @@
   (if (struct? s) struct table))
 
 (defn union
-  """Union of any number of sets / frozensets.
-     Return type is a new set/frozenset depending on type of the first argument."""
+  ```Union of any number of sets / frozensets.
+     Return type is a new set/frozenset depending on type of the first argument.```
   [fst & others]
   ((typefcn fst)
    ;(kvs (merge fst ;others))))
 
 (defn intersect
-  """Intersection of any number of sets / frozensets.
-     Return type is a new set/frozenset depending on type of the first argument."""
+  ```Intersection of any number of sets / frozensets.
+     Return type is a new set/frozenset depending on type of the first argument.```
   [fst & others]
   (def tb (table))
   (def ss (sort-by length (array/concat @[fst] others)))
@@ -95,8 +95,8 @@
    ;(kvs tb)))
 
 (defn diff
-  """Difference of any number of sets / frozensets.
-     Return type is a new set/frozenset depending on type of the first argument."""
+  ```Difference of any number of sets / frozensets.
+     Return type is a new set/frozenset depending on type of the first argument.```
   [fst & others]
   (def tb (table ;(kvs fst)))
   (loop [s :in others]
