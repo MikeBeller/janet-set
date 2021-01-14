@@ -5,8 +5,10 @@
   (assert (deep= x y) msg))
 
 # create set and frozenset and check underlying representation
-(ae (set/new :a :b :c) @{:a true :b true :c true})
-(ae (set/frozen :b :d) {:b true :d true})
+(ae (tracev (length (set/new :a :b :c))) 3)
+(ae (sorted (values (set/new :a :b :c)) @[:a :b :c]))
+(ae (length (set/frozen :b :d)) 2)
+(ae (sorted (values (set/frozen :b :d)) @[:b :d]))
 
 # test membership
 (assert (= true (set/in? (set/new :a :b) :a)))
