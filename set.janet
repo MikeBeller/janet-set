@@ -6,11 +6,14 @@
 (import abstract)
 
 # Prototype for janet sets
+(defn- same-keys [at bt]
+  (and
+    (= (length at) (length bt))
+    (deep= (keys at) (keys bt))))
 
 (def method-table
   {
     :length (fn [ab] (def st (abstract/unwrap ab)) (length (table/rawget st :data)))
-    :frozen (fn [ab] (def st (abstract/unwrap ab)) (struct? (table/rawget st :data)))
     })
 
 (def proto
@@ -19,22 +22,26 @@
              (if (keyword? k)
                (get method-table k)
                (if (get (table/rawget st :data) k) k)))
+    :__put (fn [st k v]
+             (put-in st [:data k] v))
     :__next (fn [st k]
               (next (table/rawget st :data) k))
     :__compare (fn [a b]
-                 (printf "compare %j %j" (table/rawget a :data) (table/rawget b :data))
-                 (compare (table/rawget a :data) (table/rawget b :data)))
-    :__tostrin (fn [st buf]
-                  (buffer/push-string buf "{{")
-                  (var first true)
+                 (def at (table/rawget a :data))
+                 (def bt (table/rawget b :data))
+                 (if (same-keys at bt) 0
+                   (cmp at bt)))
+    :__tostring (fn [st buf]
                   (def data (table/rawget st :data))
-                  (loop [k :keys data]
-                    (if first
-                      (set first false)
+                  (if (table? data) (buffer/push-string buf "@"))
+                  (buffer/push-string buf "#{")
+                  (loop [[i it] :pairs (keys data)]
+                    (when (not= i 0)
                       (buffer/push-string buf " "))
-                    (buffer/push-string buf k))
-                  (buffer/push-string buf "}}"))
+                    (buffer/push-string buf (describe it)))
+                  (buffer/push-string buf "}"))
     })
+
 
 # To address issue with storing keywords as keys in abstract types
 (defn- keystr [it]
@@ -69,14 +76,17 @@
 (defn set?
   ```Check if argument is a set```
   [s]
-  (and (= (type s) ":abstract/new")
-    (not (truthy? (get s :frozen)))))
+  (and
+    (= (type s) :abstract/new)
+    (let [tb (abstract/unwrap s)]
+      (table? (get tb :data)))))
 
 (defn frozenset?
   ```Check if argument is a frozenset```
   [s]
-  (and (= (type s) ":abstract/new")
-    (truthy? (get s :frozen))))
+  (= (type s) :abstract/new)
+    (let [tb (abstract/unwrap s)]
+      (struct? (get tb :data))))
 
 # add/remove
 (defn add
@@ -84,7 +94,10 @@
      the set is a frozenset, in which case creates a new frozenset.```
   [ab it]
   (def it (keystr it))
-  (put-in ab [:data it] it))
+  (if (frozenset? ab)
+    (frozen it ;(values ab))
+    (do (put ab it it)
+      ab)))
 
 (defn remove
   ```Remove a value from a set.  Modifies the original unless

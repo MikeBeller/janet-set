@@ -19,7 +19,9 @@
 # add and remove -- also check type of result
 # adding to a set modifies it
 (def s (set/new "a" "b"))
+(assert (set/set? s))
 (def s2 (set/add s "c"))
+(assert (set/set? s2))
 (ae s2 (set/new "a" "b" "c"))
 (ae s (set/new "a" "b" "c"))
 # adding to a frozenset creates a new frozenset
@@ -52,10 +54,14 @@
 
 # check values
 (def s (set/new "a" "b" "c"))
-(ae (set/new ;(set/values s)) s)
+(ae (set/new ;(values s)) s)
 (def fs (set/frozen "a" "b" "c"))
-(ae (set/frozen ;(set/values fs)) fs)
+(ae (set/frozen ;(values fs)) fs)
 
 # handle keywords
 (ae (set/frozen "a" :b) (set/frozen "a" "b"))
+
+# printouts
+(assert (set/new "a") `@#{"a"}`)
+(assert (set/frozen "a") `#{"a"}`)
 
