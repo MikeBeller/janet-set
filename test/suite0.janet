@@ -62,6 +62,6 @@
 (ae (set/frozen "a" :b) (set/frozen "a" "b"))
 
 # printouts
-(assert (set/new "a") `@#{"a"}`)
-(assert (set/frozen "a") `#{"a"}`)
+(assert (= (string (set/new "a")) `@#{"a"}`))
+(assert (= (string (set/frozen "a")) `#{"a"}`))
 
