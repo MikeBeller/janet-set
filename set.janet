@@ -21,6 +21,9 @@
                (if (get (table/rawget st :data) k) k)))
     :__next (fn [st k]
               (next (table/rawget st :data) k))
+    :__compare (fn [a b]
+                 (printf "compare %j %j" (table/rawget a :data) (table/rawget b :data))
+                 (compare (table/rawget a :data) (table/rawget b :data)))
     :__tostrin (fn [st buf]
                   (buffer/push-string buf "{{")
                   (var first true)
