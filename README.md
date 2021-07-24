@@ -64,7 +64,7 @@ values.
 # Installing
 
 ```
-jpm install https://github.com/mikebeller/janet-set.git
+jpm install set
 ```
 
 ## License
