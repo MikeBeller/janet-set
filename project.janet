@@ -1,5 +1,6 @@
 (declare-project
   :name "set"
+  :description "Implementation of set types in Janet."
   :author "mikebeller"
   :license "MIT"
   :url "https://github.com/mikebeller/janet-set"
